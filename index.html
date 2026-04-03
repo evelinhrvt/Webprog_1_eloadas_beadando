@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Moziműsor - Web-programozás 1</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="menu.js"></script> </head>
+<body>
+
+<main class="container">
+    <h2>Üdvözlünk a Moziműsor Kezelőben!</h2>
+    <p>Válassz a fenti menüpontok közül az alkalmazás különböző funkcióinak eléréséhez.</p>
+
+    <div style="margin-top: 40px;">
+        <h3 style="border-bottom: 1px solid #444; padding-bottom: 10px; display: inline-block;">Jelenleg elérhető mozik:</h3>
+        <ul id="kezdoLista" style="margin-top: 20px;"></ul>
+    </div>
+</main>
+
+<script>
+    fetch('api.php')
+        .then(response => response.json())
+        .then(adatok => {
+            const lista = document.getElementById('kezdoLista');
+            if (!adatok || adatok.length === 0) {
+                lista.innerHTML = '<li><span style="color: #aaa; font-style: italic;">Jelenleg nincs adat az adatbázisban. Válassz egy CRUD menüpontot a hozzáadáshoz!</span></li>';
+                return;
+            }
+            adatok.forEach(mozi => {
+                lista.innerHTML += `
+                    <li>
+                        <div style="flex: 1;">
+                            <strong>${mozi.mozinev}</strong> <span style="color: #aaa;">(${mozi.cim})</span>
+                        </div>
+                    </li>`;
+            });
+        })
+        .catch(hiba => {
+            console.error("Hiba az adatok lekérésekor:", hiba);
+            document.getElementById('kezdoLista').innerHTML = '<li><span style="color: #e50914;">Nem sikerült kapcsolódni az adatbázishoz.</span></li>';
+        });
+</script>
+
+</body>
+</html>
