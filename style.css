@@ -1,0 +1,140 @@
+/* --- ÁLTALÁNOS BEÁLLÍTÁSOK --- */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121212; /* Sötét háttér */
+    color: #ffffff; /* Fehér szöveg */
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh; /* Teljes képernyőmagasság, hogy a lábléc mindig alul maradjon */
+}
+
+/* --- FEJLÉC (HEADER) --- */
+header {
+    background-color: #e50914; /* Piros fejléc */
+    padding: 20px;
+    text-align: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 24px;
+    color: #ffffff;
+}
+
+/* --- MENÜSÁV (NAV) --- */
+nav {
+    background-color: #222222;
+    padding: 15px;
+    text-align: center;
+}
+
+nav a {
+    color: white;
+    text-decoration: none;
+    margin: 0 15px;
+    font-weight: bold;
+    font-size: 16px;
+    transition: color 0.3s;
+}
+
+nav a:hover {
+    color: #e50914; /* Rámutatáskor piros lesz */
+}
+
+/* --- FŐ TARTALOM (MAIN) --- */
+main {
+    flex: 1; /* Kitölti a maradék helyet a header és footer között */
+    padding: 40px;
+    text-align: center;
+}
+
+main h2 {
+    margin-top: 0;
+}
+
+/* --- LÁBLÉC (FOOTER) --- */
+footer {
+    background-color: #222222;
+    text-align: center;
+    padding: 15px;
+    margin-top: auto;
+    border-top: 2px solid #e50914; /* Piros csík a lábléc tetején */
+    font-size: 14px;
+}
+
+/* --- ALOLDALAK (CRUD, SPA) STÍLUSAI --- */
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    text-align: center;
+}
+
+/* Hivatkozások az aloldalakon (pl. Vissza a főoldalra) */
+a {
+    color: #e50914;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Űrlap elemek (Inputok és Gombok) */
+input[type="text"], input[type="number"] {
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid #444;
+    border-radius: 4px;
+    background-color: #333;
+    color: white;
+    font-size: 16px;
+}
+
+button {
+    padding: 10px 20px;
+    margin: 5px;
+    background-color: #e50914;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #b20710; /* Sötétebb piros rámutatáskor */
+}
+
+/* Listák (Mozik/Filmek listázásához) */
+ul {
+    list-style-type: none;
+    padding: 0;
+    max-width: 600px;
+    margin: 20px auto;
+}
+
+li {
+    background-color: #222;
+    margin: 10px 0;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 5px solid #e50914;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+}
+
+/* React SPA alkalmazások konténerei */
+.app-container {
+    margin-top: 20px;
+    padding: 30px;
+    border: 2px solid #444;
+    border-radius: 8px;
+    display: inline-block;
+    background-color: #1a1a1a;
+}
