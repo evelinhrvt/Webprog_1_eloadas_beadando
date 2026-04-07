@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>JS Mozik CRUD</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="menu.js"></script>
+</head>
+<body>
+
+<main class="container">
+    <h2>Mozik Kezelése (JavaScript + API)</h2>
+    <br>
+    <div>
+        <input type="text" id="moziNev" placeholder="Mozi neve">
+        <input type="text" id="moziCim" placeholder="Címe">
+        <button onclick="hozzaadMozi()">Hozzáadás</button>
+    </div>
+    <ul id="moziLista"></ul>
+</main>
+
+<script>
+    const API_URL = 'api.php';
+    let mozik = [];
+
+    async function betoltMozik() {
+        try {
+            const response = await fetch(API_URL);
+            mozik = await response.json();
+            megjelenitMozik();
+        } catch (hiba) {
+            console.error("Hiba:", hiba);
+        }
+    }
+
+    function megjelenitMozik() {
+        const lista = document.getElementById('moziLista');
+        lista.innerHTML = '';
+        mozik.forEach((mozi) => {
+            lista.innerHTML += `
+                <li>
+                    <div style="flex: 1;"><strong>${mozi.mozinev}</strong> <span style="color: #aaa;">(${mozi.cim})</span></div>
+                    <button onclick="torolMozi(${mozi.moziazon})" style="margin-left: 10px; background-color: #e50914;">Törlés</button>
+                </li>`;
+        });
+    }
+
+    async function hozzaadMozi() {
+        const mozinev = document.getElementById('moziNev').value;
+        const cim = document.getElementById('moziCim').value;
+        if(mozinev && cim) {
+            await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ mozinev: mozinev, cim: cim })
+            });
+            document.getElementById('moziNev').value = '';
+            document.getElementById('moziCim').value = '';
+            betoltMozik();
+        }
+    }
+
+    async function torolMozi(id) {
+        await fetch(API_URL, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ moziazon: id })
+        });
+        betoltMozik();
+    }
+
+    betoltMozik();
+</script>
+</body>
+</html>
