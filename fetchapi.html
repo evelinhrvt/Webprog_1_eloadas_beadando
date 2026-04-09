@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Fetch API CRUD</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="menu.js"></script>
+</head>
+<body>
+
+<main class="container">
+    <h2>Mozik Kezelése (Szerver oldali - Fetch API)</h2>
+    <br>
+    <input type="text" id="nev" placeholder="Mozi neve">
+    <input type="text" id="cim" placeholder="Címe">
+    <button onclick="mentes()">Hozzáadás</button>
+    <ul id="lista"></ul>
+</main>
+
+<script>
+    const API_URL = 'api.php';
+
+    async function betoltes() {
+        const res = await fetch(API_URL);
+        const adatok = await res.json();
+        const lista = document.getElementById('lista');
+        lista.innerHTML = '';
+        adatok.forEach(mozi => {
+            lista.innerHTML += `<li>
+                <div style="flex: 1;"><strong>${mozi.mozinev}</strong> <span style="color: #aaa;">(${mozi.cim})</span></div>
+                <button onclick="torles(${mozi.moziazon})" style="margin-left: 10px; background-color: #e50914;">Törlés</button>
+            </li>`;
+        });
+    }
+
+    async function mentes() {
+        const mozinev = document.getElementById('nev').value;
+        const cim = document.getElementById('cim').value;
+        await fetch(API_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ mozinev, cim })
+        });
+        betoltes();
+    }
+
+    async function torles(id) {
+        await fetch(API_URL, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ moziazon: id })
+        });
+        betoltes();
+    }
+
+    betoltes();
+</script>
+</body>
+</html>
