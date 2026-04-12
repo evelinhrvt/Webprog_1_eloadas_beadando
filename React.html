@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>React CRUD</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="menu.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body>
+
+<main id="root"></main>
+
+<script type="text/babel">
+    const { useState, useEffect } = React;
+    const API_URL = 'api.php';
+
+    function App() {
+        const [mozik, setMozik] = useState([]);
+        const [nev, setNev] = useState("");
+        const [cim, setCim] = useState("");
+
+        const betoltMozik = () => {
+            fetch(API_URL)
+                .then(res => res.json())
+                .then(data => { if (Array.isArray(data)) setMozik(data); });
+        };
+
+        useEffect(() => { betoltMozik(); }, []);
+
+        const hozzaad = () => {
+            if (nev && cim) {
+                fetch(API_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ mozinev: nev, cim: cim })
+                }).then(() => { betoltMozik(); setNev(""); setCim(""); });
+            }
+        };
+
+        const torol = (id) => {
+            fetch(API_URL, {
+                method: 'DELETE',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ moziazon: id })
+            }).then(() => betoltMozik());
+        };
+
+        return (
+            <div className="container">
+                <h2>Mozik Kezelése (React CRUD + API)</h2>
+                <br/>
+                <div>
+                    <input type="text" placeholder="Mozi neve" value={nev} onChange={(e) => setNev(e.target.value)} />
+                    <input type="text" placeholder="Címe" value={cim} onChange={(e) => setCim(e.target.value)} />
+                    <button onClick={hozzaad}>Hozzáadás</button>
+                </div>
+                <ul>
+                    {mozik.map(mozi => (
+                        <li key={mozi.moziazon}>
+                            <div style={{flex: 1}}><strong>{mozi.mozinev}</strong> <span style={{color: '#aaa'}}>({mozi.cim})</span></div>
+                            <button onClick={() => torol(mozi.moziazon)} style={{marginLeft: '10px', backgroundColor: '#e50914'}}>Törlés</button>
+                        </li>
+                    ))}
+                </ul>
+            </div>
+        );
+    }
+    const root = ReactDOM.createRoot(document.getElementById('root'));
+    root.render(<App />);
+</script>
+</body>
+</html>

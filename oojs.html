@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>OOJS Grafika</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="menu.js"></script>
+</head>
+<body>
+
+<main class="container">
+  <h2>Objektumorientált JS (OOJS)</h2>
+  <br>
+  <button onclick="ujTeglalap()">Új Téglalap generálása</button>
+</main>
+
+<script>
+  class Alakzat {
+    constructor(x, y, szin) {
+      this.x = x;
+      this.y = y;
+      this.szin = szin;
+      this.elem = document.createElement("div");
+      this.elem.className = "alakzat";
+    }
+
+    rajzol() {
+      this.elem.style.left = this.x + "px";
+      this.elem.style.top = this.y + "px";
+      this.elem.style.backgroundColor = this.szin;
+      document.querySelector("main").appendChild(this.elem);
+    }
+  }
+
+  class Teglalap extends Alakzat {
+    constructor(x, y, szin, szelesseg, magassag) {
+      super(x, y, szin);
+      this.szelesseg = szelesseg;
+      this.magassag = magassag;
+    }
+
+    rajzol() {
+      this.elem.style.width = this.szelesseg + "px";
+      this.elem.style.height = this.magassag + "px";
+      super.rajzol();
+    }
+  }
+
+  function ujTeglalap() {
+    const x = Math.floor(Math.random() * 500) + 50;
+    const y = Math.floor(Math.random() * 300) + 300;
+    const szinek = ["red", "blue", "yellow", "green"];
+    const randomSzin = szinek[Math.floor(Math.random() * szinek.length)];
+
+    const tegla = new Teglalap(x, y, randomSzin, 100, 50);
+    tegla.rajzol();
+  }
+</script>
+</body>
+</html>
