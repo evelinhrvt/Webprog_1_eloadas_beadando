@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8">
+  <title>React SPA</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="menu.js"></script>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+</head>
+<body>
+
+<main id="root"></main>
+
+<script>
+  const h = React.createElement;
+  const { useState } = React;
+
+  function Szamlalo() {
+    const [szam, setSzam] = useState(0);
+
+    return h('div', { className: 'app-container', style: { textAlign: 'center', minWidth: '320px' } },
+      h('h3', { style: { borderBottom: '1px solid #444', paddingBottom: '10px', marginTop: '0' } }, 'Egyszerű számláló'),
+      h('div', { style: { fontSize: '5rem', fontWeight: 'bold', margin: '30px 0', color: '#ffffff' } }, szam),
+      h('div', { style: { display: 'flex', justifyContent: 'center', gap: '10px' } },
+        h('button', { onClick: () => setSzam(szam + 1) }, '+1'),
+        h('button', { onClick: () => setSzam(szam - 1) }, '-1'),
+        h('button', { onClick: () => setSzam(0), style: { backgroundColor: '#555' } }, 'Nullázás')
+      )
+    );
+  }
+
+  function SzinValto() {
+    const [szin, setSzin] = useState('#00509E');
+    const szinek = ['#00509E', '#B20710', '#2E7D32', '#E65100', '#6A1B9A', '#00838F'];
+
+    function valtoztat() {
+      const elerhetoSzinek = szinek.filter(sz => sz !== szin);
+      const veletlen = elerhetoSzinek[Math.floor(Math.random() * elerhetoSzinek.length)];
+      setSzin(veletlen);
+    }
+
+    return h('div', {
+      className: 'app-container',
+      style: {
+        backgroundColor: szin,
+        color: 'white',
+        transition: 'background-color 0.6s ease',
+        textAlign: 'center',
+        minWidth: '320px',
+        minHeight: '220px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'center',
+        alignItems: 'center',
+        border: 'none',
+        boxShadow: '0 4px 15px rgba(0,0,0,0.5)'
+      }
+    },
+      h('h3', { style: { textShadow: '1px 1px 3px rgba(0,0,0,0.6)', margin: '0 0 10px 0' } }, 'Színváltó játék'),
+      h('p', { style: { textShadow: '1px 1px 3px rgba(0,0,0,0.6)', marginBottom: '20px' } }, 'Kattints a gombra a szín megváltoztatásához!'),
+      h('button', { onClick: valtoztat, style: { backgroundColor: 'rgba(0,0,0,0.4)', border: '1px solid rgba(255,255,255,0.5)' } }, 'Szín váltása')
+    );
+  }
+
+  function App() {
+    const [aktivMenu, setAktivMenu] = useState('szamlalo');
+
+    return h('div', { className: 'container' },
+      h('h2', null, 'React Single Page Application (SPA)'),
+      h('div', { style: { display: 'flex', justifyContent: 'center', gap: '15px', margin: '30px 0' } },
+        h('button', {
+          onClick: () => setAktivMenu('szamlalo'),
+          style: { backgroundColor: aktivMenu === 'szamlalo' ? '#e50914' : '#333', border: 'none', opacity: aktivMenu === 'szamlalo' ? '1' : '0.7' }
+        }, 'Számláló'),
+        h('button', {
+          onClick: () => setAktivMenu('szinvalto'),
+          style: { backgroundColor: aktivMenu === 'szinvalto' ? '#e50914' : '#333', border: 'none', opacity: aktivMenu === 'szinvalto' ? '1' : '0.7' }
+        }, 'Színváltó')
+      ),
+      h('div', { style: { display: 'flex', justifyContent: 'center' } },
+        aktivMenu === 'szamlalo' ? h(Szamlalo) : h(SzinValto)
+      )
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>

@@ -1,140 +1,124 @@
-/* --- ÁLTALÁNOS BEÁLLÍTÁSOK --- */
-body {
-    font-family: Arial, sans-serif;
-    background-color: #121212; /* Sötét háttér */
-    color: #ffffff; /* Fehér szöveg */
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh; /* Teljes képernyőmagasság, hogy a lábléc mindig alul maradjon */
+* {
+    box-sizing: border-box;
 }
 
-/* --- FEJLÉC (HEADER) --- */
+body {
+    margin: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    color: #f5f5f5;
+    background: #181818;
+}
+
 header {
-    background-color: #e50914; /* Piros fejléc */
-    padding: 20px;
+    padding: 28px 20px;
     text-align: center;
+    background: #111;
+    border-bottom: 3px solid #e50914;
 }
 
 header h1 {
     margin: 0;
-    font-size: 24px;
-    color: #ffffff;
+    font-size: 28px;
 }
 
-/* --- MENÜSÁV (NAV) --- */
 nav {
-    background-color: #222222;
-    padding: 15px;
-    text-align: center;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 14px;
+    background: #242424;
 }
 
 nav a {
-    color: white;
+    color: #fff;
     text-decoration: none;
-    margin: 0 15px;
-    font-weight: bold;
-    font-size: 16px;
-    transition: color 0.3s;
+    padding: 10px 14px;
+    border-radius: 6px;
+    background: #333;
 }
 
 nav a:hover {
-    color: #e50914; /* Rámutatáskor piros lesz */
+    background: #e50914;
 }
 
-/* --- FŐ TARTALOM (MAIN) --- */
-main {
-    flex: 1; /* Kitölti a maradék helyet a header és footer között */
-    padding: 40px;
-    text-align: center;
-}
-
-main h2 {
-    margin-top: 0;
-}
-
-/* --- LÁBLÉC (FOOTER) --- */
-footer {
-    background-color: #222222;
-    text-align: center;
-    padding: 15px;
-    margin-top: auto;
-    border-top: 2px solid #e50914; /* Piros csík a lábléc tetején */
-    font-size: 14px;
-}
-
-/* --- ALOLDALAK (CRUD, SPA) STÍLUSAI --- */
 .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 20px;
-    text-align: center;
+    width: min(1100px, calc(100% - 32px));
+    margin: 32px auto;
+    padding: 24px;
+    background: #222;
+    border-radius: 8px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
 }
 
-/* Hivatkozások az aloldalakon (pl. Vissza a főoldalra) */
-a {
-    color: #e50914;
-    text-decoration: none;
+h2 {
+    margin-top: 0;
+    color: #fff;
 }
 
-a:hover {
-    text-decoration: underline;
-}
-
-/* Űrlap elemek (Inputok és Gombok) */
-input[type="text"], input[type="number"] {
+input {
+    width: min(240px, 100%);
+    margin: 6px 6px 6px 0;
     padding: 10px;
-    margin: 5px;
-    border: 1px solid #444;
-    border-radius: 4px;
-    background-color: #333;
-    color: white;
-    font-size: 16px;
+    color: #fff;
+    background: #121212;
+    border: 1px solid #555;
+    border-radius: 6px;
 }
 
 button {
-    padding: 10px 20px;
-    margin: 5px;
-    background-color: #e50914;
-    color: white;
-    border: none;
-    border-radius: 4px;
+    margin: 6px 6px 6px 0;
+    padding: 10px 14px;
+    color: #fff;
     cursor: pointer;
-    font-weight: bold;
-    font-size: 16px;
-    transition: background-color 0.3s;
+    background: #2c7a4b;
+    border: 0;
+    border-radius: 6px;
 }
 
 button:hover {
-    background-color: #b20710; /* Sötétebb piros rámutatáskor */
+    filter: brightness(1.15);
 }
 
-/* Listák (Mozik/Filmek listázásához) */
 ul {
-    list-style-type: none;
     padding: 0;
-    max-width: 600px;
-    margin: 20px auto;
+    list-style: none;
 }
 
 li {
-    background-color: #222;
-    margin: 10px 0;
-    padding: 15px;
-    border-radius: 5px;
-    border-left: 5px solid #e50914;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    text-align: left;
+    gap: 10px;
+    margin: 10px 0;
+    padding: 14px;
+    background: #2d2d2d;
+    border-left: 4px solid #e50914;
+    border-radius: 6px;
 }
 
-/* React SPA alkalmazások konténerei */
-.app-container {
-    margin-top: 20px;
-    padding: 30px;
-    border: 2px solid #444;
-    border-radius: 8px;
-    display: inline-block;
-    background-color: #1a1a1a;
+footer {
+    margin-top: 40px;
+    padding: 20px;
+    text-align: center;
+    color: #bbb;
+    background: #111;
+}
+
+.alakzat {
+    position: absolute;
+    z-index: 5;
+    border: 2px solid #fff;
+    border-radius: 6px;
+}
+
+@media (max-width: 700px) {
+    li {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    input,
+    button {
+        width: 100%;
+    }
 }

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>React CRUD</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="menu.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+</head>
+<body>
+
+<main id="root"></main>
+
+<script>
+    const h = React.createElement;
+    const { useState } = React;
+
+    function App() {
+        const [mozik, setMozik] = useState([
+            { moziazon: 1, mozinev: 'A38 Hajó', irszam: 1113, cim: 'Petőfi híd budai hídfő', telefon: '4643940' },
+            { moziazon: 2, mozinev: 'Bárka Kikötő a Ráday utcában', irszam: 1092, cim: 'Ráday utca', telefon: '' },
+            { moziazon: 3, mozinev: 'Bem', irszam: 1024, cim: 'Margit krt. 5/b.', telefon: '3168708' },
+            { moziazon: 4, mozinev: 'Cinema City Csepel Plaza', irszam: 1212, cim: 'Rákóczi F. út 154-170.', telefon: '4258111' },
+            { moziazon: 5, mozinev: 'Corvin Budapest Filmpalota', irszam: 1082, cim: 'Corvin köz 1.', telefon: '4595050' }
+        ]);
+        const [szerkesztettAzon, setSzerkesztettAzon] = useState(null);
+        const [uzenet, setUzenet] = useState('');
+        const [urlap, setUrlap] = useState({ mozinev: '', irszam: '', cim: '', telefon: '' });
+
+        function urlapValtozik(e) {
+            setUrlap(Object.assign({}, urlap, { [e.target.name]: e.target.value }));
+        }
+
+        function urlapTorles() {
+            setSzerkesztettAzon(null);
+            setUrlap({ mozinev: '', irszam: '', cim: '', telefon: '' });
+        }
+
+        function ment() {
+            if (!urlap.mozinev.trim() || !urlap.cim.trim()) {
+                setUzenet('A mozi neve és címe kötelező.');
+                return;
+            }
+
+            if (szerkesztettAzon === null) {
+                const ujAzon = mozik.length ? Math.max.apply(null, mozik.map(mozi => mozi.moziazon)) + 1 : 1;
+                setMozik(mozik.concat([Object.assign({}, urlap, { moziazon: ujAzon })]));
+                setUzenet('Sikeres hozzáadás.');
+            } else {
+                setMozik(mozik.map(mozi => mozi.moziazon === szerkesztettAzon ? Object.assign({}, urlap, { moziazon: szerkesztettAzon }) : mozi));
+                setUzenet('Sikeres módosítás.');
+            }
+
+            urlapTorles();
+        }
+
+        function szerkeszt(mozi) {
+            setSzerkesztettAzon(mozi.moziazon);
+            setUrlap({
+                mozinev: mozi.mozinev || '',
+                irszam: mozi.irszam || '',
+                cim: mozi.cim || '',
+                telefon: mozi.telefon || ''
+            });
+            setUzenet('Szerkesztési mód.');
+        }
+
+        function torol(id) {
+            setMozik(mozik.filter(mozi => mozi.moziazon !== id));
+            if (szerkesztettAzon === id) {
+                urlapTorles();
+            }
+            setUzenet('Sikeres törlés.');
+        }
+
+        return h('div', { className: 'container' },
+            h('h2', null, 'Mozik kezelése (React CRUD)'),
+            h('div', null,
+                h('input', { type: 'text', name: 'mozinev', placeholder: 'Mozi neve', value: urlap.mozinev, onChange: urlapValtozik }),
+                h('input', { type: 'number', name: 'irszam', placeholder: 'Irányítószám', value: urlap.irszam, onChange: urlapValtozik }),
+                h('input', { type: 'text', name: 'cim', placeholder: 'Címe', value: urlap.cim, onChange: urlapValtozik }),
+                h('input', { type: 'text', name: 'telefon', placeholder: 'Telefon', value: urlap.telefon, onChange: urlapValtozik }),
+                h('button', { onClick: ment }, szerkesztettAzon === null ? 'Hozzáadás' : 'Módosítás mentése'),
+                szerkesztettAzon !== null ? h('button', { onClick: urlapTorles }, 'Mégse') : null
+            ),
+            uzenet ? h('p', { style: { color: '#aaa' } }, uzenet) : null,
+            h('ul', null, mozik.map(mozi =>
+                h('li', { key: mozi.moziazon },
+                    h('div', { style: { flex: 1 } },
+                        h('strong', null, mozi.mozinev),
+                        h('span', { style: { color: '#aaa' } }, ` (${mozi.irszam}, ${mozi.cim}${mozi.telefon ? ', tel.: ' + mozi.telefon : ''})`)
+                    ),
+                    h('button', { onClick: () => szerkeszt(mozi) }, 'Módosítás'),
+                    h('button', { onClick: () => torol(mozi.moziazon), style: { marginLeft: '10px', backgroundColor: '#e50914' } }, 'Törlés')
+                )
+            ))
+        );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>

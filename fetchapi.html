@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Fetch API CRUD</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="menu.js"></script>
+</head>
+<body>
+
+<main class="container">
+    <h2>Mozik kezelése (Szerver oldali - Fetch API)</h2>
+
+    <input type="text" id="nev" placeholder="Mozi neve">
+    <input type="number" id="irszam" placeholder="Irányítószám">
+    <input type="text" id="cim" placeholder="Címe">
+    <input type="text" id="telefon" placeholder="Telefon">
+    <button id="mentesGomb" onclick="mentes()">Hozzáadás</button>
+    <button id="megseGomb" onclick="megse()" style="display: none;">Mégse</button>
+    <p id="uzenet" style="color: #aaa;"></p>
+    <ul id="lista"></ul>
+</main>
+s
+<script>
+    const API_URL = 'api.php';
+    let szerkesztettAzon = null;
+
+    async function betoltes() {
+        const res = await fetch(API_URL);
+        const adatok = await res.json();
+        const lista = document.getElementById('lista');
+        lista.innerHTML = '';
+
+        adatok.forEach(mozi => {
+            const telefonSzoveg = mozi.telefon ? `, tel.: ${mozi.telefon}` : '';
+            lista.innerHTML += `<li>
+                <div style="flex: 1;">
+                    <strong>${mozi.mozinev}</strong>
+                    <span style="color: #aaa;">(${mozi.irszam || ''}, ${mozi.cim}${telefonSzoveg})</span>
+                </div>
+                <button onclick='szerkesztes(${JSON.stringify(mozi)})'>Módosítás</button>
+                <button onclick="torles(${mozi.moziazon})" style="margin-left: 10px; background-color: #e50914;">Törlés</button>
+            </li>`;
+        });
+    }
+
+    async function mentes() {
+        const mozinev = document.getElementById('nev').value.trim();
+        const irszam = document.getElementById('irszam').value;
+        const cim = document.getElementById('cim').value.trim();
+        const telefon = document.getElementById('telefon').value.trim();
+
+        if (!mozinev || !cim) {
+            document.getElementById('uzenet').textContent = 'A mozi neve és címe kötelező.';
+            return;
+        }
+
+        const method = szerkesztettAzon === null ? 'POST' : 'PUT';
+        await fetch(API_URL, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ moziazon: szerkesztettAzon, mozinev, irszam, cim, telefon })
+        });
+
+        document.getElementById('uzenet').textContent = method === 'POST' ? 'Sikeres hozzáadás.' : 'Sikeres módosítás.';
+        urlapTorles();
+        betoltes();
+    }
+
+    function szerkesztes(mozi) {
+        szerkesztettAzon = mozi.moziazon;
+        document.getElementById('nev').value = mozi.mozinev || '';
+        document.getElementById('irszam').value = mozi.irszam || '';
+        document.getElementById('cim').value = mozi.cim || '';
+        document.getElementById('telefon').value = mozi.telefon || '';
+        document.getElementById('mentesGomb').textContent = 'Módosítás mentése';
+        document.getElementById('megseGomb').style.display = 'inline-block';
+    }
+
+    async function torles(id) {
+        await fetch(API_URL, {
+            method: 'DELETE',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ moziazon: id })
+        });
+
+        if (szerkesztettAzon === id) {
+            urlapTorles();
+        }
+
+        document.getElementById('uzenet').textContent = 'Sikeres törlés.';
+        betoltes();
+    }
+
+    function megse() {
+        urlapTorles();
+        document.getElementById('uzenet').textContent = 'Szerkesztés megszakítva.';
+    }
+
+    function urlapTorles() {
+        szerkesztettAzon = null;
+        document.getElementById('nev').value = '';
+        document.getElementById('irszam').value = '';
+        document.getElementById('cim').value = '';
+        document.getElementById('telefon').value = '';
+        document.getElementById('mentesGomb').textContent = 'Hozzáadás';
+        document.getElementById('megseGomb').style.display = 'none';
+    }
+
+    betoltes();
+</script>
+</body>
+</html>

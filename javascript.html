@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>JavaScript CRUD</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="menu.js"></script>
+</head>
+<body>
+
+<main class="container">
+    <h2>Mozik kezelése (JavaScript tömbös CRUD)</h2>
+
+    <div>
+        <input type="text" id="moziNev" placeholder="Mozi neve">
+        <input type="number" id="irszam" placeholder="Irányítószám">
+        <input type="text" id="moziCim" placeholder="Címe">
+        <input type="text" id="telefon" placeholder="Telefon">
+        <button id="mentesGomb" onclick="mentMozi()">Hozzáadás</button>
+        <button id="megseGomb" onclick="megseSzerkesztes()" style="display: none;">Mégse</button>
+    </div>
+
+    <p id="uzenet" style="color: #aaa;"></p>
+    <ul id="moziLista"></ul>
+</main>
+
+<script>
+    let mozik = [
+        { moziazon: 1, mozinev: "A38 Hajó", irszam: 1113, cim: "Petőfi híd budai hídfő", telefon: "4643940" },
+        { moziazon: 2, mozinev: "Bárka Kikötő a Ráday utcában", irszam: 1092, cim: "Ráday utca", telefon: "" },
+        { moziazon: 3, mozinev: "Bem", irszam: 1024, cim: "Margit krt. 5/b.", telefon: "3168708" },
+        { moziazon: 4, mozinev: "Budapesti Európai Ifjúsági Központ", irszam: 1024, cim: "Zivatar u. 1-3.", telefon: "2124080" },
+        { moziazon: 5, mozinev: "Cervantes Intézet", irszam: 1000, cim: "Vörösmarty u. 32.", telefon: "" },
+        { moziazon: 6, mozinev: "Cinema City Csepel Plaza", irszam: 1212, cim: "Rákóczi F. út 154-170.", telefon: "4258111" },
+        { moziazon: 7, mozinev: "Cinema City Új Udvar", irszam: 1036, cim: "Bécsi út 38-44.", telefon: "4378383" },
+        { moziazon: 8, mozinev: "Cirko-Gejzír", irszam: 1055, cim: "Balassi Bálint u. 15-17.", telefon: "2690904" },
+        { moziazon: 9, mozinev: "Corvin Budapest Filmpalota", irszam: 1082, cim: "Corvin köz 1.", telefon: "4595050" },
+        { moziazon: 10, mozinev: "Erlin 9 galéria", irszam: 1000, cim: "Ráday utca", telefon: "" }
+    ];
+
+    let szerkesztettAzon = null;
+
+    function megjelenitMozik() {
+        const lista = document.getElementById("moziLista");
+        lista.innerHTML = "";
+
+        mozik.forEach((mozi) => {
+            const telefonSzoveg = mozi.telefon ? `, tel.: ${mozi.telefon}` : "";
+            lista.innerHTML += `
+                <li>
+                    <div style="flex: 1;">
+                        <strong>${mozi.mozinev}</strong>
+                        <span style="color: #aaa;">(${mozi.irszam}, ${mozi.cim}${telefonSzoveg})</span>
+                    </div>
+                    <button onclick="szerkesztMozi(${mozi.moziazon})">Módosítás</button>
+                    <button onclick="torolMozi(${mozi.moziazon})" style="margin-left: 10px; background-color: #e50914;">Törlés</button>
+                </li>`;
+        });
+    }
+
+    function mentMozi() {
+        const mozinev = document.getElementById("moziNev").value.trim();
+        const irszam = Number(document.getElementById("irszam").value);
+        const cim = document.getElementById("moziCim").value.trim();
+        const telefon = document.getElementById("telefon").value.trim();
+
+        if (!mozinev || !irszam || !cim) {
+            document.getElementById("uzenet").textContent = "A mozi neve, az irányítószám és a cím megadása kötelező.";
+            return;
+        }
+
+        if (szerkesztettAzon === null) {
+            const ujAzon = mozik.length ? Math.max(...mozik.map(mozi => mozi.moziazon)) + 1 : 1;
+            mozik.push({ moziazon: ujAzon, mozinev, irszam, cim, telefon });
+            document.getElementById("uzenet").textContent = "Új mozi hozzáadva.";
+        } else {
+            const index = mozik.findIndex(mozi => mozi.moziazon === szerkesztettAzon);
+            mozik[index] = { moziazon: szerkesztettAzon, mozinev, irszam, cim, telefon };
+            document.getElementById("uzenet").textContent = "Mozi adatai módosítva.";
+        }
+
+        urlapTorles();
+        megjelenitMozik();
+    }
+
+    function szerkesztMozi(id) {
+        const mozi = mozik.find(elem => elem.moziazon === id);
+        if (!mozi) {
+            return;
+        }
+
+        szerkesztettAzon = id;
+        document.getElementById("moziNev").value = mozi.mozinev;
+        document.getElementById("irszam").value = mozi.irszam;
+        document.getElementById("moziCim").value = mozi.cim;
+        document.getElementById("telefon").value = mozi.telefon;
+        document.getElementById("mentesGomb").textContent = "Módosítás mentése";
+        document.getElementById("megseGomb").style.display = "inline-block";
+        document.getElementById("uzenet").textContent = "Szerkesztési mód.";
+    }
+
+    function torolMozi(id) {
+        mozik = mozik.filter(mozi => mozi.moziazon !== id);
+
+        if (szerkesztettAzon === id) {
+            urlapTorles();
+        }
+
+        document.getElementById("uzenet").textContent = "Mozi törölve.";
+        megjelenitMozik();
+    }
+
+    function megseSzerkesztes() {
+        urlapTorles();
+        document.getElementById("uzenet").textContent = "Szerkesztés megszakítva.";
+    }
+
+    function urlapTorles() {
+        szerkesztettAzon = null;
+        document.getElementById("moziNev").value = "";
+        document.getElementById("irszam").value = "";
+        document.getElementById("moziCim").value = "";
+        document.getElementById("telefon").value = "";
+        document.getElementById("mentesGomb").textContent = "Hozzáadás";
+        document.getElementById("megseGomb").style.display = "none";
+    }
+
+    megjelenitMozik();
+</script>
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <title>Axios CRUD</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="menu.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+
+<main id="root"></main>
+
+<script>
+    const h = React.createElement;
+    const { useState, useEffect } = React;
+    const API_URL = 'api.php';
+
+    function App() {
+        const [mozik, setMozik] = useState([]);
+        const [szerkesztettAzon, setSzerkesztettAzon] = useState(null);
+        const [hiba, setHiba] = useState('');
+        const [uzenet, setUzenet] = useState('');
+        const [urlap, setUrlap] = useState({ mozinev: '', irszam: '', cim: '', telefon: '' });
+
+        function betolt() {
+            axios.get(API_URL)
+                .then(res => {
+                    setHiba('');
+                    setMozik(Array.isArray(res.data) ? res.data : []);
+                })
+                .catch(() => setHiba('Nem sikerült kapcsolódni az adatbázishoz.'));
+        }
+
+        useEffect(() => { betolt(); }, []);
+
+        function urlapValtozik(e) {
+            setUrlap(Object.assign({}, urlap, { [e.target.name]: e.target.value }));
+        }
+
+        function urlapTorles() {
+            setSzerkesztettAzon(null);
+            setUrlap({ mozinev: '', irszam: '', cim: '', telefon: '' });
+        }
+
+        function ment() {
+            if (!urlap.mozinev.trim() || !urlap.cim.trim()) {
+                setUzenet('A mozi neve és címe kötelező.');
+                return;
+            }
+
+            const ujFelvetel = szerkesztettAzon === null;
+            const adat = Object.assign({}, urlap, { moziazon: szerkesztettAzon });
+            const keres = ujFelvetel ? axios.post(API_URL, adat) : axios.put(API_URL, adat);
+
+            keres.then(() => {
+                betolt();
+                urlapTorles();
+                setUzenet(ujFelvetel ? 'Sikeres hozzáadás.' : 'Sikeres módosítás.');
+            });
+        }
+
+        function szerkeszt(mozi) {
+            setSzerkesztettAzon(mozi.moziazon);
+            setUrlap({
+                mozinev: mozi.mozinev || '',
+                irszam: mozi.irszam || '',
+                cim: mozi.cim || '',
+                telefon: mozi.telefon || ''
+            });
+            setUzenet('Szerkesztési mód.');
+        }
+
+        function torol(id) {
+            axios.delete(API_URL, { data: { moziazon: id } }).then(() => {
+                betolt();
+                if (szerkesztettAzon === id) {
+                    urlapTorles();
+                }
+                setUzenet('Sikeres törlés.');
+            });
+        }
+
+        return h('div', { className: 'container' },
+            h('h2', null, 'Mozik kezelése (Szerver oldali - Axios)'),
+            h('div', null,
+                h('input', { type: 'text', name: 'mozinev', placeholder: 'Mozi neve', value: urlap.mozinev, onChange: urlapValtozik }),
+                h('input', { type: 'number', name: 'irszam', placeholder: 'Irányítószám', value: urlap.irszam, onChange: urlapValtozik }),
+                h('input', { type: 'text', name: 'cim', placeholder: 'Címe', value: urlap.cim, onChange: urlapValtozik }),
+                h('input', { type: 'text', name: 'telefon', placeholder: 'Telefon', value: urlap.telefon, onChange: urlapValtozik }),
+                h('button', { onClick: ment }, szerkesztettAzon === null ? 'Hozzáadás' : 'Módosítás mentése'),
+                szerkesztettAzon !== null ? h('button', { onClick: urlapTorles }, 'Mégse') : null
+            ),
+            uzenet ? h('p', { style: { color: '#aaa' } }, uzenet) : null,
+            hiba ? h('p', { style: { color: '#e50914', marginTop: '20px', fontWeight: 'bold' } }, hiba) : null,
+            h('ul', null, mozik.map(mozi =>
+                h('li', { key: mozi.moziazon },
+                    h('div', { style: { flex: 1 } },
+                        h('strong', null, mozi.mozinev),
+                        h('span', { style: { color: '#aaa' } }, ` (${mozi.irszam}, ${mozi.cim}${mozi.telefon ? ', tel.: ' + mozi.telefon : ''})`)
+                    ),
+                    h('button', { onClick: () => szerkeszt(mozi) }, 'Módosítás'),
+                    h('button', { onClick: () => torol(mozi.moziazon), style: { marginLeft: '10px', backgroundColor: '#e50914' } }, 'Törlés')
+                )
+            ))
+        );
+    }
+
+    ReactDOM.createRoot(document.getElementById('root')).render(h(App));
+</script>
+</body>
+</html>
